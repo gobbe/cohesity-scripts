@@ -1,7 +1,5 @@
 ### usage: ./clone-vms.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -target 'vcenter' -resourcepool 'resources' -viewName 'backupview' -jobName 'Virtual'
 
-### Thanks Brian Seltzer for base of this script!
-
 ### process commandline arguments
 [CmdletBinding()]
 param (
