@@ -47,7 +47,7 @@ if ($vms) {
     ### clone each vm from latest run of backupjob
     $objects = @()
     foreach ($vm in $vms){
-        $a = $vmlist | Where-Object {$_.id -ieq $vm}
+        $a = $vmlist | Where-Object {$_.id -ieq $vm}
         $vm_name = $a.Name
         write-host "Adding $vm_name to clone task"
         $objects += @{
