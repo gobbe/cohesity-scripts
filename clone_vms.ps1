@@ -72,18 +72,18 @@ if ($vms) {
         "type" = "kCloneVMs";
             "newParentId" = $newParentId;
             "targetViewName" = $viewName;
-        "continueOnError" = "false";
+        "continueOnError" = $true;
         "vmwareParameters"  = @{
-            "disableNetwork" = "true";
-            "poweredOn" = "false";
-            "suffix" =  "export-";
+            "disableNetwork" = $true;
+            "poweredOn" = $false;
+            "prefix" =  "export-";
             "resourcePoolId" = $resourcePoolId;
         }
     }
 
     write-host "Running rest-api command:"
     $clonetask | ConvertTo-Json
-    $cloneoperation = api post /clone $clonetask
+    $cloneoperation = api post restore/clone $clonetask
 
     if ($cloneoperation) {
         write-host "Cloned VMs!"
