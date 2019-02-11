@@ -4,7 +4,7 @@ This repository contains short code examples on how to use Cohesity REST API end
 
 ## Additional repository
 
-These scripts are using Brian Seltzer's cohesity-api.ps1. You can get it and guide to it from he's repository; https://github.com/bseltz-cohesity/scripts/tree/master/powershell
+These scripts are using Brian Seltzer's cohesity-api.ps1. You can get it and guide to it from https://github.com/bseltz-cohesity/scripts/tree/master/powershell
 
 ## Notes
 This is not an official Cohesity repository. Cohesity Inc. is not affiliated with the posted examples in any way.
