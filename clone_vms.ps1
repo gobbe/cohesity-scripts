@@ -20,10 +20,20 @@ apiauth -vip $vip -username $username -domain $domain
 ### search target and datastore
 $sources = api get protectionSources?"environments=kVMware&allUnderHierarchy=true"       
 $newtarget = $sources.protectionSource | where name -match $target
+
+if (!$newtarget) {
+    write-host "No registered source found with name $target" -ForegroundColor Yellow
+    exit
+}
 $newParentId = $newtarget.id
 
 $resources = api get /resourcePools?vCenterId=$newParentId
 $resourcePoolId = $resources.resourcePool.id
+
+if (!$resourcePoolId){
+    write-host "No resourcepool found for target $target" -ForegroundColor Yellow
+    exit
+}
 
 ### search for VMs to clone
 
