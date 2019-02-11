@@ -1,4 +1,4 @@
-### usage: ./clone-vms.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -target 'vcenter' -resourcepool 'resources' -viewName 'backupview' -jobName 'Virtual'
+### usage: ./clone-vms.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -target 'vcenter' -viewName 'backupview' -jobName 'Virtual'
 
 ### process commandline arguments
 [CmdletBinding()]
@@ -6,7 +6,6 @@ param (
     [Parameter(Mandatory = $True)][string]$vip,
     [Parameter(Mandatory = $True)][string]$username,
     [Parameter(Mandatory = $True)][string]$target,
-    [Parameter(Mandatory = $True)][string]$resourcepool,
     [Parameter()][string]$domain = 'local',
     [Parameter(Mandatory = $True)][string]$viewName,
     [Parameter(Mandatory = $True)][string]$jobName
@@ -17,6 +16,14 @@ param (
 
 ### authenticate
 apiauth -vip $vip -username $username -domain $domain
+
+### search target and datastore
+$sources = api get protectionSources?"environments=kVMware&allUnderHierarchy=true"       
+$newtarget = $sources.protectionSource | where name -match $target
+$newParentId = $newtarget.id
+
+$resources = api get /resourcePools?vCenterId=$newParentId
+$resourcePoolId = $resources.resourcePool.id
 
 ### search for VMs to clone
 
@@ -53,14 +60,14 @@ if ($vms) {
         "name"  = "BackupExport_" + $((get-date).ToString().Replace('/', '_').Replace(':', '_').Replace(' ', '_'));
         "objects"   = $objects;
         "type" = "kCloneVMs";
-            "newParentId" = $target;
+            "newParentId" = $newParentId;
             "targetViewName" = $viewName;
         "continueOnError" = "false";
         "vmwareParameters"  = @{
             "disableNetwork" = "true";
             "poweredOn" = "false";
             "suffix" =  "export-";
-            "resourcePoolId" = $resourcepool;
+            "resourcePoolId" = $resourcePoolId;
         }
     }
 
