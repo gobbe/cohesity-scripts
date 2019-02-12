@@ -1,5 +1,7 @@
 ### usage: ./capacityReport.ps1 -vip 192.168.1.198 -username admin [ -domain local ] [-jobName 'Virtual']i [-runs '30'] [-export 'filename.csv']
 
+### Capacity reporting example - Jussi Jaurola <jussi@cohesity.com>
+
 ### process commandline arguments
 [CmdletBinding()]
 param (
