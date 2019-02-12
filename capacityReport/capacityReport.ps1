@@ -1,17 +1,17 @@
-### usage: ./clone-vms.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -target 'vcenter' -viewName 'backupview' -jobName 'Virtual'
-
-### Capacity reporting example - Jussi Jaurola <jussi@cohesity.com>
+### usage: ./capacityReport.ps1 -vip 192.168.1.198 -username admin [ -domain local ] [-jobName 'Virtual']i [-runs '30'] [-export 'filename.csv'] -unit MB/GB/TB
 
 ### process commandline arguments
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $True)][string]$vip,
     [Parameter(Mandatory = $True)][string]$username,
-    [Parameter(Mandatory = $True)][string]$target,
     [Parameter()][string]$domain = 'local',
-    [Parameter(Mandatory = $True)][string]$viewName,
-    [Parameter(Mandatory = $True)][string]$jobName
+    [Parameter()][string]$jobName,
+    [Parameter()][string]$runs = '30',
+    [Parameter()][string]$export,
+    [Parameter()][ValidateSet('MB','GB','TB')][string]$unit
 )
+
 
 ### source the cohesity-api helper code
 . ./cohesity-api
@@ -19,79 +19,87 @@ param (
 ### authenticate
 apiauth -vip $vip -username $username -domain $domain
 
-### search target and datastore
-$sources = api get protectionSources?"environments=kVMware&allUnderHierarchy=true"       
-$newtarget = $sources.protectionSource | where name -match $target
+### cluster Id
+$clusterId = (api get cluster).id
 
-if (!$newtarget) {
-    write-host "No registered source found with name $target" -ForegroundColor Yellow
-    exit
+$csvcontent =""
+### find protectionRuns 
+
+if ($export) {
+    if ($unit -eq "MB"){Add-Content -Path $export -Value '"Source job","Frontend Capacity (MB)","Backend Capacity (MB)"'}
+    if ($unit -eq "GB"){Add-Content -Path $export -Value '"Source job","Frontend Capacity (GB)","Backend Capacity (GB)"'}
+    if ($unit -eq "TB"){Add-Content -Path $export -Value '"Source job","Frontend Capacity (TB)","Backend Capacity (TB)"'}
+} 
+
+"Collecting Job Run Statistics..."
+
+if ($jobName) {
+    $protectionJobs = (api get protectionJobs) | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }|Where name -match $jobName
+} else {
+    $protectionJobs = (api get protectionJobs) | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }
 }
-$newParentId = $newtarget.id
 
-$resources = api get /resourcePools?vCenterId=$newParentId
-$resourcePoolId = $resources.resourcePool.id
-
-if (!$resourcePoolId){
-    write-host "No resourcepool found for target $target" -ForegroundColor Yellow
-    exit
-}
-
-### search for VMs to clone
-
-$jobs = api get protectionJobs | Where-Object {$_.name -ieq $jobName}
-$jobId = $jobs.Id
-$vms = $jobs.sourceIds
-$vmcount = $vms.count
-
-if ($vms) {
-
-    $runs = api get protectionRuns?"jobId=$jobId&excludeNonRestoreableRuns=true"
+foreach ($job in ((api get protectionJobs) | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }|Where name -match $jobName)) {
+    "Runs for $($job.name)"
+    $jobId = $job.id
+    $jobName = $job.name
+    $run = api get protectionRuns?jobId=$($job.id)`&numRuns=$runs`&excludeTasks=true`&excludeNonRestoreableRuns=true
     
-    $latestrun = $runs.backupRun[0]
-    $latestrundate = usecsToDate $runs.backupRun.stats.startTimeUsecs[0]
-    write-host "Backup job $jobName contains $vmcount VMs"
-    write-host "Latest recoverable snapshot for job is $latestrundate"
-
-    ### fetch list of VMs for source
-    $vmlist = api get protectionSources/virtualMachines?vCenterId=$($jobs.parentSourceId)
-
-    ### clone each vm from latest run of backupjob
-    $objects = @()
-    foreach ($vm in $vms){
-        $a = $vmlist | Where-Object {$_.id -ieq $vm}
-        $vm_name = $a.Name
-        write-host "Adding $vm_name to clone task"
-        $objects += @{
-            "jobId" = $jobs.Id;
-            "protectionSourceId" = $vm; 
-        }
+    if ($unit -eq  "MB") {
+        $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.backupRun.stats.startTimeUsecs}},
+                                    @{Name="Run Seconds"; Expression={[math]::Round(($_.backupRun.stats.endTimeUsecs - $_.backupRun.stats.startTimeUsecs)/(1000*1000))}},
+                                    @{Name="MB Read"; Expression={[math]::Round(($_.backupRun.stats.totalBytesReadFromSource)/(1024*1024))}},
+                                     @{Name="MB Written"; Expression={[math]::Round(($_.backupRun.stats.totalPhysicalBackupSizeBytes)/(1024*1024))}} | ft 
     }
 
-    $clonetask = @{
-        "name"  = "BackupExport_" + $((get-date).ToString().Replace('/', '_').Replace(':', '_').Replace(' ', '_'));
-        "objects"   = $objects;
-        "type" = "kCloneVMs";
-            "newParentId" = $newParentId;
-            "targetViewName" = $viewName;
-        "continueOnError" = $true;
-        "vmwareParameters"  = @{
-            "disableNetwork" = $true;
-            "poweredOn" = $false;
-            "prefix" =  "export-";
-            "resourcePoolId" = $resourcePoolId;
-        }
+    if ($unit -eq  "GB") {
+        $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.backupRun.stats.startTimeUsecs}},
+                                        @{Name="Run Seconds"; Expression={[math]::Round(($_.backupRun.stats.endTimeUsecs - $_.backupRun.stats.startTimeUsecs)/(1000*1000))}},
+                                        @{Name="GB Read"; Expression={[math]::Round(($_.backupRun.stats.totalBytesReadFromSource)/(1024*1024*1024))}},
+                                        @{Name="GB Written"; Expression={[math]::Round(($_.backupRun.stats.totalPhysicalBackupSizeBytes)/(1024*1024*1024))}} | ft 
+
     }
 
-    write-host "Running rest-api command:"
-    $clonetask | ConvertTo-Json
-    $cloneoperation = api post restore/clone $clonetask
+    if ($unit -eq "TB") {
+        $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.backupRun.stats.startTimeUsecs}},
+                                        @{Name="Run Seconds"; Expression={[math]::Round(($_.backupRun.stats.endTimeUsecs - $_.backupRun.stats.startTimeUsecs)/(1000*1000))}},
+                                        @{Name="TB Read"; Expression={[math]::Round(($_.backupRun.stats.totalBytesReadFromSource)/(1024*1024*1024*1024))}},
+                                        @{Name="TB Written"; Expression={[math]::Round(($_.backupRun.stats.totalPhysicalBackupSizeBytes)/(1024*1024*1024*1024))}} | ft 
 
-    if ($cloneoperation) {
-        write-host "Cloned VMs!"
+    }
+    
+        
+    $fsum = 0
+    $bsum = 0
+    
+    $sum = $run.backupRun.stats.totalBytesReadFromSource
+    $sum | Foreach { $fsum += $_}
+    
+    $sum = $run.backupRun.stats.totalPhysicalBackupSizeBytes
+    $sum | Foreach { $bsum += $_}
+    
+    if ($unit -eq "MB") {
+        $bunitsum = [math]::Round($bsum/(1024*1024))
+        $funitsum = [math]::Round($fsum/(1024*1024))
+        write-host "jeee!"
     }
 
-}
-else {
-    write-host "Cannot find backupjob with VMs" -ForegroundColor Yellow
-}
+    if ($unit -eq "GB") {
+        $bunitsum = [math]::Round($bsum/(1024*1024*1024))
+        $funitsum = [math]::Round($fsum/(1024*1024*1024))
+    }
+
+    if ($unit -eq "TB") {
+        $bunitsum = [math]::Round($bsum/(1024*1024*1024*1024))
+        $funitsum = [math]::Round($fsum/(1024*1024*1024*1024))
+    }
+
+    write-host "Total frontend capacity: $funitsum $unit"
+    write-host "Total backend capacity used: $bunitsum $unit"
+    
+    if ($export) {
+        $line = "{0},{1},{2}" -f $jobName, $funitsum, $bunitsum
+        Add-Content -Path $export -Value $line
+    } 
+       
+} 
