@@ -83,7 +83,6 @@ foreach ($job in ((api get protectionJobs) | Where-Object{ $_.policyId.split(':'
     if ($unit -eq "MB") {
         $bunitsum = [math]::Round($bsum/(1024*1024))
         $funitsum = [math]::Round($fsum/(1024*1024))
-        write-host "jeee!"
     }
 
     if ($unit -eq "GB") {
