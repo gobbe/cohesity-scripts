@@ -11,7 +11,7 @@ param (
     [Parameter()][string]$jobName,
     [Parameter()][string]$runs = '30',
     [Parameter()][string]$export,
-    [Parameter()][ValidateSet('MB','GB','TB')][string]$unit
+    [Parameter()][ValidateSet('MB','GB','TB')][string]$unit = "MB"
 )
 
 
