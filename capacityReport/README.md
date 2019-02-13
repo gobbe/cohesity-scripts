@@ -2,6 +2,8 @@
 
 `capacityReport.ps1` is a simple script that lists all or specified backupjob runs used capacity (Both frontend and backend) and optionally outputs a csv list with usage details. This data can be used for billing purposes. It is recommended to run the script daily and calculate the monthly average for a more accurate consumption report. 
 
+All units are base 2, so MB is actually MiB etc.
+
 # How to use
 
 ```
