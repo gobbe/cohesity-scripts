@@ -1,6 +1,6 @@
 # Introduction
 
-`dataprotectionUSed.ps1` is a simple script that lists backjobs utilizing Cohesity DataProtection license and calculates total capacity to be reported.
+`dataprotectionUSed.ps1` is a simple script that lists backjobs utilizing Cohesity DataProtection license and calculates total capacity to be reported. Not that this doesn't count expired backupjobruns which might affect on used capacity in long run.
 
 # How to use
 
