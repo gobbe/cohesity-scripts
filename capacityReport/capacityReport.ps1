@@ -119,7 +119,7 @@ foreach ($job in $protectionJobs) {
         { 
             $backupsize = $fsum
         } else {
-            $backupsize = $tsum + $fsum - $tsum
+            $backupsize = $tsum + $fsum 
         }
 
         if ($unit -eq "MB") {
