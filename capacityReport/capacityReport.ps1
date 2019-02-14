@@ -53,9 +53,9 @@ if (!$protectionJobs) {
 }
 
 if ($export) {
-    if ($unit -eq "MB"){Add-Content -Path $export -Value "'Source job','Source Size (MB)','Backup Size (MB)','Frontend Capacity (MB)','Backend Capacity (MB)','Tenant Name','Tenant ID','Source Cluster'"}
-    if ($unit -eq "GB"){Add-Content -Path $export -Value "'Source job','Source Size (GB)','Backup Size (GB)','Frontend Capacity (GB)','Backend Capacity (GB)','Tenant Name','Tenant ID','Source Cluster'"}
-    if ($unit -eq "TB"){Add-Content -Path $export -Value "'Source job','Source Size (TB)','Backup Size (TB)','Frontend Capacity (TB)','Backend Capacity (TB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "MB"){Add-Content -Path $export -Value "'Source job','Source Size (MB)','Backup Size (MB)','Frontend Capacity (MB)','Backend Capacity (MB)','Archived Capacity (MB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "GB"){Add-Content -Path $export -Value "'Source job','Source Size (GB)','Backup Size (GB)','Frontend Capacity (GB)','Backend Capacity (GB)','Archived Capacity (MB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "TB"){Add-Content -Path $export -Value "'Source job','Source Size (TB)','Backup Size (TB)','Frontend Capacity (TB)','Backend Capacity (TB)','Archived Capacity (TB)','Tenant Name','Tenant ID','Source Cluster'"}
 } 
 
 foreach ($job in $protectionJobs) {
@@ -77,6 +77,10 @@ foreach ($job in $protectionJobs) {
             $remoteClusterName = $remoteCluster.name
             write-host "Job is remote. Original source $remoteClusterName"
         }
+
+        ### Find CloudArchive capacity
+        $iceboxArchiveBytes = $backupjobruns.backupJobRuns.protectionRuns.copyRun.finishedTasks.archivalInfo.bytesTransferred
+
         if ($unit -eq  "MB") {
             $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.startTimeUsecs}},
                                             @{Name="Source Size"; Expression={[math]::Round(($_.totalSourceSizeBytes)/(1024*1024))}},
@@ -106,6 +110,9 @@ foreach ($job in $protectionJobs) {
         $fsum = 0
         $bsum = 0
         $tsum = 0
+        $asum = 0
+
+        $iceboxArchiveBytes | Foreach { $asum += $_}
             
         $sum = $run.totalBytesReadFromSource
         $sum | Foreach { $fsum += $_}
@@ -127,20 +134,23 @@ foreach ($job in $protectionJobs) {
             $funitsum = [math]::Round($fsum/(1024*1024))
             $totalsum = [math]::Round($tsum/(1024*1024))
             $backupsize = [math]::Round($backupsize/(1024*1024))
+            $archivedCapacity = [math]::Round($asum/(1024*1024))
         }
         
         if ($unit -eq "GB") {
             $bunitsum = [math]::Round($bsum/(1024*1024*1024))
             $funitsum = [math]::Round($fsum/(1024*1024*1024))
             $totalsum = [math]::Round($tsum/(1024*1024*1024))
-            $backupsize = [math]::Round($backupsize/(1024*1024*102))
+            $backupsize = [math]::Round($backupsize/(1024*1024*1024))
+            $archivedCapacity = [math]::Round($asum/(1024*1024*1024))
         }
         
         if ($unit -eq "TB") {
             $bunitsum = [math]::Round($bsum/(1024*1024*1024*1024))
             $funitsum = [math]::Round($fsum/(1024*1024*1024*1024))
             $totalsum = [math]::Round($tsum/(1024*1024*1024*1024))
-            $backupsize = [math]::Round($backupsize/(1024*1024*102*102))
+            $backupsize = [math]::Round($backupsize/(1024*1024*1024*1024))
+            $archivedCapacity = [math]::Round($asum/(1024*1024*1024*1024))
         }
         
         write-host "Total backupsize: $backupsize $unit"
@@ -148,7 +158,7 @@ foreach ($job in $protectionJobs) {
         write-host "Total backend capacity used: $bunitsum $unit"
         
         if ($export) {
-            $line = "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}'" -f $jobName, $totalsum, $backupsize, $funitsum, $bunitsum, $tenantName, $tenantId, $remoteClusterName
+            $line = "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}'" -f $jobName, $totalsum, $backupsize, $funitsum, $bunitsum, $archivedCapacity, $tenantName, $tenantId, $remoteClusterName
             Add-Content -Path $export -Value $line
         } 
     } else {
