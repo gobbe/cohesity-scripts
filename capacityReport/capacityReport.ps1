@@ -156,6 +156,7 @@ foreach ($job in $protectionJobs) {
         write-host "Total backupsize: $backupsize $unit"
         write-host "Total frontend capacity: $funitsum $unit"
         write-host "Total backend capacity used: $bunitsum $unit"
+        write-host "Total CloudArchive capacity used: $archivedCapacity $unit"
         
         if ($export) {
             $line = "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}'" -f $jobName, $totalsum, $backupsize, $funitsum, $bunitsum, $archivedCapacity, $tenantName, $tenantId, $remoteClusterName
