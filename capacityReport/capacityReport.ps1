@@ -53,21 +53,30 @@ if (!$protectionJobs) {
 }
 
 if ($export) {
-    if ($unit -eq "MB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (MB)','Backend Capacity (MB)','Tenant Name','Tenant ID'"}
-    if ($unit -eq "GB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (GB)','Backend Capacity (GB)','Tenant Name','Tenant ID'"}
-    if ($unit -eq "TB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (TB)','Backend Capacity (TB)','Tenant Name','Tenant ID'"}
+    if ($unit -eq "MB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (MB)','Backend Capacity (MB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "GB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (GB)','Backend Capacity (GB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "TB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (TB)','Backend Capacity (TB)','Tenant Name','Tenant ID','Source Cluster'"}
 } 
 
 foreach ($job in $protectionJobs) {
     "Runs for $($job.name)"
     $jobId = $job.id
     $jobName = $job.name
+
     $backupjobruns = api get /backupjobruns?id=$($jobid)`&allUnderHierarchy=true`&numRuns=$runs`&excludeTasks=true`&excludeNonRestoreableRuns=false`&startTimeUsecs=$startDate
     $run = $backupjobruns.backupJobRuns.protectionRuns.backupRun.base
     $tenantName = $backupjobruns.tenants.name
     $tenantId = $backupjobruns.tenants.tenantId
 
     if ($backupjobruns) { 
+        
+        ### Find remote cluster name
+        $policyId = $job.policyId.split(':')[1]
+        if ($policyId -ne $clusterId) {
+            $remoteCluster = api get remoteClusters | where clusterIncarnationId -eq $policyId
+            $remoteClusterName = $remoteCluster.name
+            write-host "Job is remote. Original source $remoteClusterName"
+        }
         if ($unit -eq  "MB") {
             $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.startTimeUsecs}},
                                             @{Name="Run Seconds"; Expression={[math]::Round(($_.endTimeUsecs - $_.startTimeUsecs)/(1000*1000))}},
@@ -119,7 +128,7 @@ foreach ($job in $protectionJobs) {
         write-host "Total backend capacity used: $bunitsum $unit"
         
         if ($export) {
-            $line = "'{0}','{1}','{2}','{3}','{4}'" -f $jobName, $funitsum, $bunitsum, $tenantName, $tenantId
+            $line = "'{0}','{1}','{2}','{3}','{4}','{5}'" -f $jobName, $funitsum, $bunitsum, $tenantName, $tenantId, $remoteClusterName
             Add-Content -Path $export -Value $line
         } 
     } else {
