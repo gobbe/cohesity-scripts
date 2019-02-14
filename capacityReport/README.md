@@ -22,6 +22,8 @@ capacityReport.ps1
 This is an example of CSV output report from script. CSV contains more information than output version due the screen limitations.
 
 ```
+PS /Users/jpj/cohesity-scripts/capacityReport> Import-Csv ./test.csv | ft  
+
 'Source job' 'Source Size (MB)' 'Backup Size (MB)' 'Frontend Capacity (MB)' 'Backend Capacity (MB)' 'Archived Capacity (MB)' 'Tenant Name' 'Tenant ID' 'Source Cluster'
 ------------ ------------------ ------------------ ------------------------ ----------------------- ------------------------ ------------- ----------- ----------------
 'VMS'        '6144'             '6144'             '6144'                   '11'                    '704'                    ''            ''          ''
