@@ -19,17 +19,14 @@ capacityReport.ps1
 ```
 # Example report
 ```
-Total backupsize: 3072 MB
-Total frontend capacity: 3072 MB
-Total backend capacity used: 0 MB
-PS C:\Users\Administrator> Import-csv .\run.csv | ft
 
-'Source job' 'Source Size (MB)' 'Backup Size (MB)' 'Frontend Capacity (MB)' 'Backend Capacity (MB)' 'Tenant Name' 'Tenant ID' 'Source Cluster'
------------- ------------------ ------------------ ------------------------ ----------------------- ------------- ----------- ----------------
-'VMS'        '6144'             '6144'             '6144'                   '11'                    ''            ''          ''
-'Virtual'    '75776'            '76311'            '535'                    '0'                     ''            ''          'cohesity-01'
-'Physical'   '29158'            '202845'           '173687'                 '0'                     ''            ''          'cohesity-01'
-'Bizapps'    '3072'             '3072'             '3072'                   '0'                     'org1'        'org1/'     ''
+'Source job' 'Source Size (MB)' 'Backup Size (MB)' 'Frontend Capacity (MB)' 'Backend Capacity (MB)' 'Archived Capacity (MB)' 'Tenant Name' 'Tenant ID' 'Source Cluster'
+------------ ------------------ ------------------ ------------------------ ----------------------- ------------------------ ------------- ----------- ----------------
+'VMS'        '6144'             '6144'             '6144'                   '11'                    '704'                    ''            ''          ''
+'Virtual'    '75776'            '76402'            '626'                    '0'                     '0'                      ''            ''          'cohesity-01'
+'Physical'   '29158'            '249160'           '220002'                 '0'                     '0'                      ''            ''          'cohesity-01'
+'Bizapps'    '3072'             '3072'             '3072'                   '0'                     '0'                      'org1'        'org1/'     ''
+
 
 ```
 
