@@ -1,4 +1,4 @@
-### usage: ./capacityReport.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -startDate 'mm/dd/yyyy' [-jobName 'Virtual'] [-runs '30'] [-export 'filename.csv'] [-unit MB/GB/TB]
+### usage: ./capacityReport.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -startDate 'mm/dd/yyyy' [-jobName 'Virtual'] [-runs '30'] [-export 'filename.csv'] [-unit MB/GB/TB] [-includeReplicatedJobs true|false]
 
 ### Capacity reporting example - Jussi Jaurola <jussi@cohesity.com>
 
@@ -12,7 +12,8 @@ param (
     [Parameter()][string]$jobName,
     [Parameter()][string]$runs = '1000',
     [Parameter()][string]$export,
-    [Parameter()][ValidateSet('MB','GB','TB')][string]$unit = "MB"
+    [Parameter()][ValidateSet('MB','GB','TB')][string]$unit = "MB",
+    [Parameter()][ValidateSet('true','false')][string]$includeReplicatedJobs = "false"
 )
 
 
@@ -35,19 +36,27 @@ $clusterId = (api get cluster).id
 $csvcontent =""
 ### find protectionRuns 
 
+
+
+"Collecting Job Run Statistics..."
+
+### Create filter based on params
+###    $protectionJobs = (api get protectionJobs?allUnderHierarchy=true) | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }|Where name -match $jobName
+
+$protectionJobs = (api get protectionJobs?allUnderHierarchy=true)
+if ($includeReplicatedJobs -eq "false") { $protectionJobs = $protectionJobs | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }}
+if ($jobName) { $protectionJobs = $protectionJobs | Where name -match $jobName  }
+
+if (!$protectionJobs) {
+    write-host "No jobruns found with given filters" -ForegroundColor Yellow
+    exit
+}
+
 if ($export) {
     if ($unit -eq "MB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (MB)','Backend Capacity (MB)','Tenant Name','Tenant ID'"}
     if ($unit -eq "GB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (GB)','Backend Capacity (GB)','Tenant Name','Tenant ID'"}
     if ($unit -eq "TB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (TB)','Backend Capacity (TB)','Tenant Name','Tenant ID'"}
 } 
-
-"Collecting Job Run Statistics..."
-
-if ($jobName) {
-    $protectionJobs = (api get protectionJobs?allUnderHierarchy=true) | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }|Where name -match $jobName
-} else {
-    $protectionJobs = (api get protectionJobs?allUnderHierarchy=true) | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }
-}
 
 foreach ($job in $protectionJobs) {
     "Runs for $($job.name)"
@@ -115,6 +124,6 @@ foreach ($job in $protectionJobs) {
         } 
     } else {
         $rundate = usecsToDate $startDate
-        write-host "No jobruns for $jobName since $runDate"
+        write-host "No jobruns for $jobName since $runDate"  -ForegroundColor Yellow
     }   
 } 
