@@ -38,7 +38,7 @@ $csvcontent =""
 
 
 
-"Collecting Job Run Statistics..."
+"Collecting Job Run Statistics"
 
 ### Create filter based on params
 ###    $protectionJobs = (api get protectionJobs?allUnderHierarchy=true) | Where-Object{ $_.policyId.split(':')[0] -eq $clusterId }|Where name -match $jobName
@@ -53,9 +53,9 @@ if (!$protectionJobs) {
 }
 
 if ($export) {
-    if ($unit -eq "MB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (MB)','Backend Capacity (MB)','Tenant Name','Tenant ID','Source Cluster'"}
-    if ($unit -eq "GB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (GB)','Backend Capacity (GB)','Tenant Name','Tenant ID','Source Cluster'"}
-    if ($unit -eq "TB"){Add-Content -Path $export -Value "'Source job','Frontend Capacity (TB)','Backend Capacity (TB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "MB"){Add-Content -Path $export -Value "'Source job','Source Size (MB)','Backup Size (MB)','Frontend Capacity (MB)','Backend Capacity (MB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "GB"){Add-Content -Path $export -Value "'Source job','Source Size (GB)','Backup Size (GB)','Frontend Capacity (GB)','Backend Capacity (GB)','Tenant Name','Tenant ID','Source Cluster'"}
+    if ($unit -eq "TB"){Add-Content -Path $export -Value "'Source job','Source Size (TB)','Backup Size (TB)','Frontend Capacity (TB)','Backend Capacity (TB)','Tenant Name','Tenant ID','Source Cluster'"}
 } 
 
 foreach ($job in $protectionJobs) {
@@ -63,7 +63,7 @@ foreach ($job in $protectionJobs) {
     $jobId = $job.id
     $jobName = $job.name
 
-    $backupjobruns = api get /backupjobruns?id=$($jobid)`&allUnderHierarchy=true`&numRuns=$runs`&excludeTasks=true`&excludeNonRestoreableRuns=false`&startTimeUsecs=$startDate
+    $backupjobruns = api get /backupjobruns?id=$($jobid)`&allUnderHierarchy=true`&numRuns=$runs`&excludeTasks=true`&excludeNonRestoreableRuns=true`&startTimeUsecs=$startDate
     $run = $backupjobruns.backupJobRuns.protectionRuns.backupRun.base
     $tenantName = $backupjobruns.tenants.name
     $tenantId = $backupjobruns.tenants.tenantId
@@ -79,6 +79,7 @@ foreach ($job in $protectionJobs) {
         }
         if ($unit -eq  "MB") {
             $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.startTimeUsecs}},
+                                            @{Name="Source Size"; Expression={[math]::Round(($_.totalSourceSizeBytes)/(1024*1024))}},
                                             @{Name="Run Seconds"; Expression={[math]::Round(($_.endTimeUsecs - $_.startTimeUsecs)/(1000*1000))}},
                                             @{Name="MB Read"; Expression={[math]::Round(($_.totalBytesReadFromSource)/(1024*1024))}},
                                              @{Name="MB Written"; Expression={[math]::Round(($_.totalPhysicalBackupSizeBytes)/(1024*1024))}} | ft 
@@ -86,49 +87,68 @@ foreach ($job in $protectionJobs) {
         
         if ($unit -eq  "GB") {
             $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.startTimeUsecs}},
-                                                @{Name="Run Seconds"; Expression={[math]::Round(($_.endTimeUsecs - $_.startTimeUsecs)/(1000*1000))}},
-                                                @{Name="GB Read"; Expression={[math]::Round(($_.totalBytesReadFromSource)/(1024*1024*1024))}},
-                                                @{Name="GB Written"; Expression={[math]::Round(($_.totalPhysicalBackupSizeBytes)/(1024*1024*1024))}} | ft 
+                                            @{Name="Source Size"; Expression={[math]::Round(($_.totalSourceSizeBytes)/(1024*1024*1024))}},
+                                            @{Name="Run Seconds"; Expression={[math]::Round(($_.endTimeUsecs - $_.startTimeUsecs)/(1000*1000))}},
+                                            @{Name="GB Read"; Expression={[math]::Round(($_.totalBytesReadFromSource)/(1024*1024*1024))}},
+                                            @{Name="GB Written"; Expression={[math]::Round(($_.totalPhysicalBackupSizeBytes)/(1024*1024*1024))}} | ft 
         
         }
         
         if ($unit -eq "TB") {
             $run | Select-Object -Property @{Name="Run Date"; Expression={usecsToDate $_.startTimeUsecs}},
-                                                @{Name="Run Seconds"; Expression={[math]::Round(($_.endTimeUsecs - $_.startTimeUsecs)/(1000*1000))}},
-                                                @{Name="TB Read"; Expression={[math]::Round(($_.totalBytesReadFromSource)/(1024*1024*1024*1024))}},
-                                                @{Name="TB Written"; Expression={[math]::Round(($_.totalPhysicalBackupSizeBytes)/(1024*1024*1024*1024))}} | ft 
+                                            @{Name="Source Size"; Expression={[math]::Round(($_.totalSourceSizeBytes)/(1024*1024*1024*1024))}},
+                                            @{Name="Run Seconds"; Expression={[math]::Round(($_.endTimeUsecs - $_.startTimeUsecs)/(1000*1000))}},
+                                            @{Name="TB Read"; Expression={[math]::Round(($_.totalBytesReadFromSource)/(1024*1024*1024*1024))}},
+                                            @{Name="TB Written"; Expression={[math]::Round(($_.totalPhysicalBackupSizeBytes)/(1024*1024*1024*1024))}} | ft 
         
         }
                     
         $fsum = 0
         $bsum = 0
+        $tsum = 0
             
         $sum = $run.totalBytesReadFromSource
         $sum | Foreach { $fsum += $_}
             
         $sum = $run.totalPhysicalBackupSizeBytes
         $sum | Foreach { $bsum += $_}
-            
+
+        $tsum = $run.totalSourceSizeBytes[0]
+
+        if ($fsum -eq $tsum) 
+        { 
+            $backupsize = $fsum
+        } else {
+            $backupsize = $tsum + $fsum - $tsum
+        }
+
         if ($unit -eq "MB") {
             $bunitsum = [math]::Round($bsum/(1024*1024))
             $funitsum = [math]::Round($fsum/(1024*1024))
+            $totalsum = [math]::Round($tsum/(1024*1024))
+            $backupsize = [math]::Round($backupsize/(1024*1024))
         }
         
         if ($unit -eq "GB") {
             $bunitsum = [math]::Round($bsum/(1024*1024*1024))
             $funitsum = [math]::Round($fsum/(1024*1024*1024))
+            $totalsum = [math]::Round($tsum/(1024*1024*1024))
+            $backupsize = [math]::Round($backupsize/(1024*1024*102))
         }
         
         if ($unit -eq "TB") {
             $bunitsum = [math]::Round($bsum/(1024*1024*1024*1024))
             $funitsum = [math]::Round($fsum/(1024*1024*1024*1024))
+            $totalsum = [math]::Round($tsum/(1024*1024*1024*1024))
+            $backupsize = [math]::Round($backupsize/(1024*1024*102*102))
         }
         
+        write-host "Total backupsize: $backupsize $unit"
         write-host "Total frontend capacity: $funitsum $unit"
         write-host "Total backend capacity used: $bunitsum $unit"
         
         if ($export) {
-            $line = "'{0}','{1}','{2}','{3}','{4}','{5}'" -f $jobName, $funitsum, $bunitsum, $tenantName, $tenantId, $remoteClusterName
+            $line = "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}'" -f $jobName, $totalsum, $backupsize, $funitsum, $bunitsum, $tenantName, $tenantId, $remoteClusterName
             Add-Content -Path $export -Value $line
         } 
     } else {
