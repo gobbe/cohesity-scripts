@@ -7,7 +7,15 @@ All units are base 2, so MB is actually MiB etc.
 # How to use
 
 ```
-capacityReport.ps1 -vip {ip or name} -username {username} -startDate {mm/dd/yyyy} [-jobName {search only matching jobs} -runs {number of backupjob runs to list, default 30} -export {name of csvfile} -unit MB|GB|TB (default MB)]
+capacityReport.ps1 
+  -vip {ip or name} 
+  -username {username} 
+  -startDate {mm/dd/yyyy} 
+  [ -jobName {search only matching jobs} 
+    -runs {number of backupjob runs to list, default 30} 
+    -export {name of csvfile}
+    -unit MB|GB|TB (default MB)
+    -includeReplicatedJobs true|false, default false]
 ```
 
 # Additional repository
