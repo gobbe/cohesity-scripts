@@ -24,12 +24,12 @@ This is an example of CSV output report from script. CSV contains more informati
 ```
 PS /Users/jpj/cohesity-scripts/capacityReport> Import-Csv ./test.csv | ft  
 
-'Source job' 'Source Size (MB)' 'Backup Size (MB)' 'Frontend Capacity (MB)' 'Backend Capacity (MB)' 'Archived Capacity (MB)' 'Tenant Name' 'Tenant ID' 'Source Cluster'
------------- ------------------ ------------------ ------------------------ ----------------------- ------------------------ ------------- ----------- ----------------
-'VMS'        '6144'             '6144'             '6144'                   '11'                    '704'                    ''            ''          ''
-'Virtual'    '75776'            '76402'            '626'                    '0'                     '0'                      ''            ''          'cohesity-01'
-'Physical'   '29158'            '249160'           '220002'                 '0'                     '0'                      ''            ''          'cohesity-01'
-'Bizapps'    '3072'             '3072'             '3072'                   '0'                     '0'                      'Organisation Inc'        'org1/'     ''
+'Source job' 'Source Size (MB)' 'Backup Size (MB)' 'Frontend Capacity (MB)' 'Backend Capacity (MB)' 'Archived Capacity (MB)' 'Tenant Name'      'Tenant ID' 'Source Cluster'
+------------ ------------------ ------------------ ------------------------ ----------------------- ------------------------ -------------      ----------- ----------------
+'VMS'        '6144'             '6144'             '6144'                   '11'                    '1280'                   ''                 ''          ''
+'Virtual'    '75776'            '77096'            '1320'                   '0'                     '0'                      ''                 ''          'cohesity-01'
+'Physical'   '29158'            '307001'           '277843'                 '0'                     '0'                      ''                 ''          'cohesity-01'
+'Bizapps'    '3072'             '3072'             '3072'                   '0'                     '0'                      'Organisation Inc' 'org1/'     ''
 
 
 ```
