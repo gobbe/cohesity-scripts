@@ -29,7 +29,7 @@ PS /Users/jpj/cohesity-scripts/capacityReport> Import-Csv ./test.csv | ft
 'VMS'        '6144'             '6144'             '6144'                   '11'                    '704'                    ''            ''          ''
 'Virtual'    '75776'            '76402'            '626'                    '0'                     '0'                      ''            ''          'cohesity-01'
 'Physical'   '29158'            '249160'           '220002'                 '0'                     '0'                      ''            ''          'cohesity-01'
-'Bizapps'    '3072'             '3072'             '3072'                   '0'                     '0'                      'org1'        'org1/'     ''
+'Bizapps'    '3072'             '3072'             '3072'                   '0'                     '0'                      'Organisation Inc'        'org1/'     ''
 
 
 ```
