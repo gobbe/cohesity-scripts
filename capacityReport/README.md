@@ -18,8 +18,10 @@ capacityReport.ps1
     -includeReplicatedJobs true|false, default false ]
 ```
 # Example report
-```
 
+This is an example of CSV output report from script. CSV contains more information than output version due the screen limitations.
+
+```
 'Source job' 'Source Size (MB)' 'Backup Size (MB)' 'Frontend Capacity (MB)' 'Backend Capacity (MB)' 'Archived Capacity (MB)' 'Tenant Name' 'Tenant ID' 'Source Cluster'
 ------------ ------------------ ------------------ ------------------------ ----------------------- ------------------------ ------------- ----------- ----------------
 'VMS'        '6144'             '6144'             '6144'                   '11'                    '704'                    ''            ''          ''
