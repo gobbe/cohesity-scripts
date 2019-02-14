@@ -12,7 +12,7 @@ capacityReport.ps1
   -username {username} 
   -startDate {mm/dd/yyyy} 
   [ -jobName {search only matching jobs} 
-    -runs {number of backupjob runs to list, default 30} 
+    -runs {number of backupjob runs to list, default 1000} 
     -export {name of csvfile}
     -unit MB|GB|TB (default MB)
     -includeReplicatedJobs true|false, default false ]
