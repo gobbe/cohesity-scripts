@@ -20,7 +20,7 @@ try {
     exit
 }
 
-# Register physical servers
+# Register physical servers and SQL service
 
 foreach ($server in $servers) 
 {
