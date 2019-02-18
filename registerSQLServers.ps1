@@ -20,7 +20,9 @@ try {
     exit
 }
 
-# Register physical servers and SQL service
+# Register physical servers
+$serverCount = $servers.Count
+write-host "Registering $serverCount new sources from $serverlist"
 
 foreach ($server in $servers) 
 {
@@ -30,4 +32,3 @@ foreach ($server in $servers)
     $serverId = $a.Id
     $newSQL = Register-CohesityProtectionSourceMSSQL -HasPersistentAgent -Id $serverId
 }
-
