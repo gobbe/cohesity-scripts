@@ -8,6 +8,23 @@ Some of these scripts are using Brian Seltzer's cohesity-api.ps1. You can get it
 
 Others leverage Cohesity PowerShell Module which can be found from https://cohesity.github.io/cohesity-powershell-module/#/
 
+## API Authentication
+
+There are two methods used in these scripts. Scripts using Brian's cohesity-api.ps1 has integrated method to store authentication keys.
+
+With scripts using Cohesity powerShell Module you can use PSCredentialTools (https://www.powershellgallery.com/packages/PSCredentialTools/1.0.1). After installing you can create new credentials with
+
+```
+Export-PSCredential -Path ./cohesityCredential.json -SecureKey ('$ecretK3y4salt1ng' | Convertto-SecureString -AsPlainText -Force)
+```
+
+After this you can use credentials by importing them from file and using them when connecting to cluster
+```
+$credentials = Import-PSCredential -Path ./cohesityCredential.json -SecureKey ('$ecretK3y4salt1ng' | Convertto-SecureString -AsPlainText -Force)
+
+Connect-CohesityCluster -server <ip> -Credential $credentials
+```
+
 ## Notes
 This is not an official Cohesity repository. Cohesity Inc. is not affiliated with the posted examples in any way.
 
