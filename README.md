@@ -10,7 +10,7 @@ Others leverage Cohesity PowerShell Module which can be found from https://cohes
 
 ## API Authentication
 
-There are two methods used in these scripts. Scripts using Brian's cohesity-api.ps1 has integrated method to store authentication keys.
+You can automate running scripts with integrated authentication. There are two methods used in these scripts. Scripts using Brian's cohesity-api.ps1 has integrated method to store authentication keys. Without this scripts using Cohesity PowerShell module will always ask authentication when running script.
 
 With scripts using Cohesity powerShell Module you can use PSCredentialTools (https://www.powershellgallery.com/packages/PSCredentialTools/1.0.1). After installing you can create new credentials with
 
