@@ -35,31 +35,33 @@ if (!$policy) {
     exit
 }
 
-$replicationCopyPolicies = $policy.snapshotReplicationCopyPolicies.target
+$replicationCopyPolicies = $policy.snapshotReplicationCopyPolicies
 $copyRunTargets = @()
 
-$replicationCopyPolicies | Foreach {
-    $daysToKeep = $_.daysToKeep
-    $targetClusterId = $_.target.clusterId
-    $targetClusterName = $_.target.clusterName
-    write-host "Replication target is $targetClusterName with id $targetClusterId" 
-
-    $copyRunTargets += @{
-        "daysToKeep" = $daysToKeep;
-        "replicationTarget"  =@{
-            "clusterId" = $targetClusterId;
-            "clusterName" = $targetClusterName;
+if ($replicationCopyPolicies) {
+    $replicationCopyPolicies | Foreach {
+        $daysToKeep = $_.daysToKeep
+        $targetClusterId = $_.target.clusterId
+        $targetClusterName = $_.target.clusterName
+        write-host "Replication target for job $jonbName is $targetClusterName with id $targetClusterId" 
+    
+        $copyRunTargets += @{
+            "daysToKeep" = $daysToKeep;
+            "replicationTarget"  =@{
+                "clusterId" = $targetClusterId;
+                "clusterName" = $targetClusterName;
+            }
+            "type" =  "kRemote" ;
         }
-        "type" =  "kRemote" ;
+    
     }
-
-}
-
-$sourceIds = @()
-$jobData = @{
-    "copyRunTargets"  = $copyRunTargets;
-    "sourceIds" = $sourceIds;
-    "runType" = "kRegular"
+    
+    $sourceIds = @()
+    $jobData = @{
+        "copyRunTargets"  = $copyRunTargets;
+        "sourceIds" = $sourceIds;
+        "runType" = "kRegular"
+    }
 }
 
 write-host "Running $jonName..."
