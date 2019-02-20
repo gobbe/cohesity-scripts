@@ -32,7 +32,7 @@ $policyId = $job.policyId
 $policy = api get protectionPolicies/$policyId
 
 if (!$policy) {
-    write-host "No job $jobName uses policy with policyid $policyId which is not found" -ForegroundColor Yellow
+    write-host "Job $jobName uses policy with policyid $policyId which is not found" -ForegroundColor Yellow
     exit
 }
 
