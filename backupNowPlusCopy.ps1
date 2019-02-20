@@ -43,7 +43,7 @@ if ($replicationCopyPolicies) {
         $daysToKeep = $_.daysToKeep
         $targetClusterId = $_.target.clusterId
         $targetClusterName = $_.target.clusterName
-        write-host "Replication target for job $jobName is $targetClusterName with id $targetClusterId. Keeping copy $daysToKeep" 
+        write-host "Replication target for job $jobName is $targetClusterName with id $targetClusterId. Keeping copy $daysToKeep days" 
     
         $copyRunTargets += @{
             "daysToKeep" = $daysToKeep;
