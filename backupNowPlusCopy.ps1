@@ -91,5 +91,5 @@ if ($copyRunTargets)
     }
 }
 
-write-host "Running $jonName..."
+write-host "Running $jobName..."
 $run = api post protectionJobs/run/$jobId $jobData
