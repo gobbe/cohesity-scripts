@@ -1,4 +1,4 @@
-### usage: ./backupNowPlusCopy.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -jobName 'Virtual'
+### usage: ./backupNowPlusCopy.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -jobName 'Virtual' [-printJson 'false']
 
 ### Run protectionJob and its replication jobs - Jussi Jaurola <jussi@cohesity.com>
 
@@ -8,7 +8,8 @@ param (
     [Parameter(Mandatory = $True)][string]$vip,
     [Parameter(Mandatory = $True)][string]$username,
     [Parameter()][string]$domain = 'local',
-    [Parameter(Mandatory = $True)][string]$jobName
+    [Parameter(Mandatory = $True)][string]$jobName,
+    [Parameter()][ValidateSet('true','false')][string]$printJson = "false"
 )
 
 ### source the cohesity-api helper code
@@ -91,5 +92,6 @@ if ($copyRunTargets)
     }
 }
 
-write-host "Running $jobName..."
+write-host "Running job $jobName..."  -ForegroundColor Yellow
+if ($printJson -eq "true") { $jobData | ConvertTo-Json -Depth 3}
 $run = api post protectionJobs/run/$jobId $jobData
