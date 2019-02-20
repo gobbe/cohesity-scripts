@@ -35,8 +35,12 @@ if (!$policy) {
     exit
 }
 
+$snapshotArchivalCopyPolicies = $policy.snapshotArchivalCopyPolicies
+
 $replicationCopyPolicies = $policy.snapshotReplicationCopyPolicies
 $copyRunTargets = @()
+
+### List replication targets and retention times for policy
 
 if ($replicationCopyPolicies) {
     $replicationCopyPolicies | Foreach {
@@ -55,7 +59,30 @@ if ($replicationCopyPolicies) {
         }
     
     }
-    
+}
+
+### List archive targets and retention times for policy
+if ($snapshotArchivalCopyPolicies) {
+    $snapshotArchivalCopyPolicies| Foreach {
+        $daysToKeep = $_.daysToKeep
+        $targetVaultId = $_.target.vaultId
+        $targetVaultName = $_.target.vaultName
+        write-host "Archive target for $jobName is $targetVaultName with id $targetVaultId. Keeping copy $daysToKeep days."
+
+        $copyRunTargets += @{
+            "daysToKeep" = $daysToKeep;
+            "archivalTarget"  =@{
+                "vaultId" = $targetVaultId;
+                "vaultName" = $targetVaultName;
+                "vaultType" = "kCloud"
+            }
+            "type" =  "kArchival" ;
+        }
+    }
+}
+
+if ($copyRunTargets)
+{
     $sourceIds = @()
     $jobData = @{
         "copyRunTargets"  = $copyRunTargets;
