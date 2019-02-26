@@ -2,12 +2,15 @@
 
 ### Add custom host mappings from file - Jussi Jaurola <jussi@cohesity.com>
 ###
+### NOTE! This replaces _all_ custom host mappings so ensure you have old one's also in hostfile
+###
 ### File content should be csv:
 ### 
 ### "IPAddress", "Hostname"
 ### 10.10.10.10,someserver
 ### 192.168.12.13,jussi
 ###
+
 
 ### process commandline arguments
 [CmdletBinding()]
