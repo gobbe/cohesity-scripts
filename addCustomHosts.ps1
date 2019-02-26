@@ -7,8 +7,8 @@
 ### File content should be csv:
 ### 
 ### "IPAddress", "Hostname"
-### 10.10.10.10,someserver
-### 192.168.12.13,jussi
+### "10.10.10.10","someserver,someserver.com,host.someserver.com"
+### "192.168.12.13","jussi"
 ###
 
 
@@ -39,7 +39,13 @@ $hostData = @()
 foreach ($mapping in $hosts) 
 {
     $domains = @()
-    $domains += $mapping.Hostname
+    $separator = ","
+    $option =  [System.StringSplitOptions]::RemoveEmptyEntries
+
+    foreach ($hname in $mapping.Hostname.Split($separator,$option)) {
+        $domains += $hname
+    }
+
     $domainName = $mapping.Hostname
     write-host "Adding custome mapping for $domainName"
 
@@ -50,7 +56,8 @@ foreach ($mapping in $hosts)
 }
 
 if ($hostData)
-{  
+{
+    write-host "Hostit"    
     $hostsData = @{
         "hosts" = $hostData
     }
