@@ -47,7 +47,7 @@ foreach ($mapping in $hosts)
     }
 
     $domainName = $mapping.Hostname
-    write-host "Adding custome mapping for $domainName"
+    write-host "Adding custom mapping for $domainName"
 
     $hostData += @{
         "ip" = $mapping.IPAddress;
