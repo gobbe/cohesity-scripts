@@ -57,7 +57,6 @@ foreach ($mapping in $hosts)
 
 if ($hostData)
 {
-    write-host "Hostit"    
     $hostsData = @{
         "hosts" = $hostData
     }
