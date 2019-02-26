@@ -2,7 +2,7 @@
 
 ### Add custom host mappings from file - Jussi Jaurola <jussi@cohesity.com>
 ###
-### File content should be like thisV:
+### File content should be csv:
 ### 
 ### "IPAddress", "Hostname"
 ### 10.10.10.10,someserver
