@@ -14,7 +14,7 @@ param (
     [Parameter()][string]$targetUsername = '', #credentials to ensure disks are online (optional, needed if online is yes)
     [Parameter()][string]$targetPw = '' #credentials to ensure disks are online (optional, eeded if online is yes)
 )
-$ErrorActionPreference = 'Stop'
+
 $finishedStates =  @('kCanceled', 'kSuccess', 'kFailure') 
 
 ### source the cohesity-api helper code
@@ -43,7 +43,7 @@ if(!$searchResults){
 }
 
 $physicalEntities = api get "/entitiesOfType?environmentTypes=kVMware&environmentTypes=kPhysical&physicalEntityTypes=kHost&vmwareEntityTypes=kVCenter"
-$virtualEntities = api get "/entitiesOfType?environmentTypes=kVMware&environmentTypes=kPhysical&isProtected=true&physicalEntityTypes=kHost&vmwareEntityTypes=kVirtualMachine" #&vmwareEntityTypes=kVCenter
+$virtualEntities = api get "/entitiesOfType?environmentTypes=kVMware&environmentTypes=kPhysical&&physicalEntityTypes=kHost&vmwareEntityTypes=kVirtualMachine" #&vmwareEntityTypes=kVCenter
 $sourceEntity = (($physicalEntities + $virtualEntities) | Where-Object { $_.displayName -ieq $sourceServer })[0]
 $targetEntity = (($physicalEntities + $virtualEntities) | Where-Object { $_.displayName -ieq $targetServer })[0]
 
