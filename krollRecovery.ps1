@@ -1,6 +1,6 @@
 ### usage: ./krollRecovery.ps1 -vip 192.168.1.198 -username admin [ -domain local ] -sourceServer 'SQL2012' -targetServer 'SQLDEV01' [-online 'true'] [-targetUsername 'Administrator'] [-targetpw 'Passw0rd']
 
-## Automate Kroll OnTrack recovery for SQL/Sharepoint - Jussi Jaurola <jussi@cohesity.com>
+### Automate Kroll OnTrack recovery for SQL/Sharepoint - Jussi Jaurola <jussi@cohesity.com>
 ###
 
 [CmdletBinding()]
@@ -129,9 +129,26 @@ do
 if($restoreTaskStatus -eq 'kSuccess'){
     Write-Host "Task ID for tearDown is: $($restoreTask.restoreTask.performRestoreTaskState.base.taskId)" -ForegroundColor Yellow
     $mountPoints = $restoreTask.restoreTask.performRestoreTaskState.mountVolumesTaskState.mountInfo.mountVolumeResultVec
-    foreach($mountPoint in $mountPoints){
-        Write-Host "$($mountPoint.originalVolumeName) mounted to $($mountPoint.mountPoint)" -ForegroundColor Yellow
+    if ($online -eq 'true') {
+        foreach($mountPoint in $mountPoints){
+            Write-Host "$($mountPoint.originalVolumeName) mounted to $($mountPoint.mountPoint)" -ForegroundColor Yellow
+        }
     }
 }else{
     Write-Warning "mount operation ended with: $restoreTaskStatus"
 }
+
+### launch Kroll OnTrack
+Write-Host "Start Kroll OnTrack and perform restore" -ForegroundColor Yellow
+
+### tear down DB clones
+$teardown = Read-Host 'Type YES to tear down mounts now'
+
+if ($teardown -eq 'YES') {
+    Write-Host "Tearing down mount...." -ForegroundColor Yellow
+    $tearDownTask = api post /destroyclone/$($restoreTask.restoreTask.performRestoreTaskState.base.taskId)
+} else {
+    Write-Host "Mount is still running. You have to clean job manually" -ForegroundColor Yellow
+}
+
+Write-Host "Kroll Recovery process finished!" -ForegroundColor Yellow
