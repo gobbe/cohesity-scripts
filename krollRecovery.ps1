@@ -113,7 +113,7 @@ if($targetEntity.parentId ){
     $mountTask['restoreParentSource'] = @{ 'id' = $targetEntity.parentId }
 }
 
-Write-Host "Mounting volumes to $targetServer .... wait!" -ForegroundColor Yellow
+Write-Host "Starting Instant Mount process to $targetServer .... wait!" -ForegroundColor Yellow
 $result = api post /restore $mountTask
 $taskid = $result.restoreTask.performRestoreTaskState.base.taskId
 
