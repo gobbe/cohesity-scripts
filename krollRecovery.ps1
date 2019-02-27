@@ -64,7 +64,7 @@ $snapshots | ForEach-object -Begin {$i=0} -Process {"Id $i - $(usecsToDate $_)";
 $snapshotId = Read-Host 'Enter ID of selected recovery point'
 
 
-if ($online = 'false') {
+if ($online -eq 'false') {
     $mountTask = @{
         'name' = 'Kroll OnTrack recovery mount';
         'objects' = @(
