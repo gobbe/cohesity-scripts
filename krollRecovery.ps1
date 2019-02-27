@@ -127,7 +127,6 @@ do
 
 ### check if mount was success
 if($restoreTaskStatus -eq 'kSuccess'){
-    Write-Host "Task ID for tearDown is: $($restoreTask.restoreTask.performRestoreTaskState.base.taskId)" -ForegroundColor Yellow
     $mountPoints = $restoreTask.restoreTask.performRestoreTaskState.mountVolumesTaskState.mountInfo.mountVolumeResultVec
     if ($online -eq 'true') {
         foreach($mountPoint in $mountPoints){
