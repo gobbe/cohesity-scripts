@@ -2,6 +2,8 @@
 
 ### Automate Kroll OnTrack recovery for SQL/Sharepoint - Jussi Jaurola <jussi@cohesity.com>
 ###
+### Some of the code is from Brian Seltzer's scripts. Thanks!
+###
 
 [CmdletBinding()]
 param (
