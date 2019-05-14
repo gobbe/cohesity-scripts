@@ -1,6 +1,12 @@
 ### usage: ./storageDomainUsed.ps1 -vip 192.168.1.198 -export file.cvs
 
 ### Example script to get billing statistics - Jussi Jaurola <jussi@cohesity.com>
+###
+### Assumptions:
+###
+###  - Script uses always previous months statistics
+###  - Script looks customer names from StorageDomains and uses these for Protection Jobs also
+###
 
 ### process commandline arguments
 [CmdletBinding()]
