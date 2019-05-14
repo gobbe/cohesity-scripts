@@ -1,4 +1,4 @@
-### usage: ./storageDomainUsed.ps1 -vip 192.168.1.198 -export file.cvs
+### usage: ./storageDomainUsed.ps1 -vip 192.168.1.198 -export file.cvs [-username username] [-password password]
 
 ### Example script to get billing statistics - Jussi Jaurola <jussi@cohesity.com>
 ###
