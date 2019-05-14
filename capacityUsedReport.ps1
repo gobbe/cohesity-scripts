@@ -14,12 +14,11 @@ param (
     [Parameter(Mandatory = $True)][string]$vip, #cohesity cluster vip
     [Parameter(Mandatory = $True)][string]$export, #cvs-file name
     [Parameter()][string]$username,
-    [Parameter()][string]$password
+    [Parameter()][string]$password,
+    [Parameter()][ValidateSet('MB','GB','TB')][string]$unit = "GB"
     )
 
 ### source the cohesity-api helper code and connect to cluster
-
-
 try {
     . ./cohesity-api
     apiauth -vip $vip -username $username 
@@ -28,6 +27,7 @@ try {
     exit
 }
 
+$units = "1" + $unit
 # Get last months first and last day
 $firstDay  = (Get-Date -day 1 -hour 0 -minute 0 -second 0).AddMonths(-1)
 $lastDay = (($firstDay).AddMonths(1).AddSeconds(-1))
@@ -37,18 +37,18 @@ $endTime = dateToUsecs $lastDay
 $stats = api get "viewBoxes?_includeTenantInfo=true&allUnderHierarchy=true&fetchStats=true&includeHidden=false" | select-object id,name,stats
 foreach ($stat in $stats) {
     $customerName = $stat.name
-    $customerStorageDomainUsed = ($stat.stats.usagePerfStats.totalPhysicalUsageBytes/1GB).Tostring(".00")
+    $customerStorageDomainUsed = ($stat.stats.usagePerfStats.totalPhysicalUsageBytes/$units).Tostring(".00")
 
     Write-Host "Fetching statistics for customer $customerName ...." -ForegroundColor Yellow
 
     Add-Content -Path $export -Value "Customer: $customerName"
-    Add-Content -Path $export -Value "Storage domain size (GiB): $customerStorageDomainUsed"
+    Add-Content -Path $export -Value "Storage domain size ($unit): $customerStorageDomainUsed"
 
     $storageDomainStats = api get /reports/objects/storage?msecsBeforeEndTime=2592000000`&viewBoxIds=$($stat.id)
 
     foreach ($client in $storageDomainStats) {
         $clientName = $client.entity.displayName
-        $physicalUsed = ($client.physicalSizeBytesOnPrimary/1GB).Tostring(".00")
+        $physicalUsed = ($client.physicalSizeBytesOnPrimary/$units).Tostring(".00")
         $clientEntityType = $client.entity.type
         $dataPoints = $client.dataPoints.snapshotTimeUsecs
 
