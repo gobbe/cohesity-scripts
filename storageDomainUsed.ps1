@@ -12,14 +12,19 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $True)][string]$vip, #cohesity cluster vip
-    [Parameter(Mandatory = $True)][string]$export #cvs-file name
-
+    [Parameter(Mandatory = $True)][string]$export, #cvs-file name
+    [Parameter()][string]$username,
+    [Parameter()][string]$password
     )
 Get-Module -ListAvailable -Name Cohesity* | Import-Module
 
+$secstr = New-Object -TypeName System.Security.SecureString
+$password.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}
+$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
+
 # Connect to Cohesity cluster
 try {
-    Connect-CohesityCluster -Server $vip 
+    Connect-CohesityCluster -Server $vip -Credential ($cred)
 } catch {
     write-host "Cannot connect to Cohesity cluster $vip" -ForegroundColor Yellow
     exit
