@@ -84,7 +84,7 @@ foreach ($stat in $stats) {
                 $maxClients = $runCount
                 
                 $virtualNames = $runSources
-                $vmCount = $runCount
+                $vmCount += $runCount
             }
         }
     }
@@ -110,7 +110,7 @@ foreach ($stat in $stats) {
                 $maxClients = $runCount
                 
                 $physicalNames = $runSources
-                $physicalCount = $runCount
+                $physicalCount += $runCount
             }
         }
     }
