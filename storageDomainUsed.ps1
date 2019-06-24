@@ -44,7 +44,7 @@ Add-Content -Path $export -Value "'Customer','Storage domain size (GiB)','Client
 $stats = Get-CohesityStorageDomain -fetchstats | select-object id,name,stats
 
 Write-Host "Billing statistics for $($lastDay.toString("MMMM yyyy"))" -ForegroundColor Yellow
-foreach ($stat in $stats) {
+foreach ($stat in $stats) {
 
     $virtualNames = @()
     $physicalNames = @()
@@ -54,14 +54,17 @@ foreach ($stat in $stats) {
     $physicalCount = 0
     $dbCount = 0
 
-    $customerName = $stat.Name
+    $separator = "_"
+    $customerNameParts = $($stat.Name).split($separator)
+    $customerName = $customerNameParts[1]
+
     $customerStorageDomainUsed = ($stat.Stats.UsagePerfStats.totalPhysicalUsageBytes/1GB).Tostring(".00")
 
     Write-Host "Fetching statistics for customer $customerName ...." -ForegroundColor Yellow
 
     
-    # Fetch VMware/Nutanix/HyperV jobs with tag Virtual
-    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match Virtual
+    # Fetch VMware/Nutanix/HyperV jobs 
+    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match ESX|HV|NUTANIX
     foreach ($job in $jobs) {
         $runClients = @()
         $maxClients = 0
@@ -86,8 +89,8 @@ foreach ($stat in $stats) {
         }
     }
 
-    # Fetch physical jobs with tag Physical
-    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match Physical
+    # Fetch physical jobs with tag
+    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match WIN|NIX
     foreach ($job in $jobs) {
         $runClients = @()
         $maxClients = 0
