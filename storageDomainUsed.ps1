@@ -59,7 +59,7 @@ foreach ($stat in $stats) {
     $customerNameParts = $($stat.Name).split($separator)
     $customerName = $customerNameParts[1]
 
-    if ($customerName -neq '') {
+    if ($customerName) {
         $customerStorageDomainUsed = ($stat.Stats.UsagePerfStats.totalPhysicalUsageBytes/1GB).Tostring(".00")
 
         Write-Host "Fetching statistics for customer $customerName ...." -ForegroundColor Yellow
