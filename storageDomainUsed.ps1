@@ -83,14 +83,15 @@ foreach ($stat in $stats) {
                 $runClients += @{$runId = $runCount} 
                 $maxClients = $runCount
                 
-                $virtualNames = $runSources
+                $runVirtualNames = $runSources
                 $vmCount += $runCount
             }
         }
+        $virtualNames = $runVirtualNames
     }
 
     # Fetch physical jobs with tag
-    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'WIN|UNIX|LINUX'
+    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'WIN|NIX'
     foreach ($job in $jobs) {
         $runClients = @()
         $maxClients = 0
@@ -109,10 +110,11 @@ foreach ($stat in $stats) {
                 $runClients += @{$runId = $runCount} 
                 $maxClients = $runCount
                 
-                $physicalNames = $runSources
+                $runPhysicalNames = $runSources
                 $physicalCount += $runCount
             }
         }
+        $physicalNames = $runPhysicalNames
     }
     
     $clientAmount = $vmCount + $physicalCount
