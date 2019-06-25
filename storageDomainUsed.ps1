@@ -90,7 +90,7 @@ foreach ($stat in $stats) {
     }
 
     # Fetch physical jobs with tag
-    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'WIN|NIX'
+    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'WIN|UNIX|LINUX'
     foreach ($job in $jobs) {
         $runClients = @()
         $maxClients = 0
