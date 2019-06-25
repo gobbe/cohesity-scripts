@@ -55,6 +55,7 @@ foreach ($stat in $stats) {
     $dbCount = 0
 
     $separator = "_"
+    $customerStorageDomainName = $stat.Name
     $customerNameParts = $($stat.Name).split($separator)
     $customerName = $customerNameParts[1]
 
@@ -119,8 +120,14 @@ foreach ($stat in $stats) {
     
     $clientAmount = $vmCount + $physicalCount
     # Write statistics to csv file
-    $line = "'{0}','{1}','{2}'" -f $customerName, $customerStorageDomainUsed, $clientAmount 
+    $line = "'{0}','{1}','{2}'" -f $customerStorageDomainName, $customerStorageDomainUsed, $clientAmount 
     Add-Content -Path $export -Value $line
+
+    # Export protected sources to file
+    $clientListExport = $customerName + "_runclients_" + $($lastDay.toString("MMMM_yyyy")) + ".txt"
+    Add-Content -Path $clientListExport -Value "Virtual sources: $virtualNames"
+    Add-Content -Path $clientListExport -Value "Physical sources: $physicalNames"
+    
 
     Write-Host "Used capacity is $customerStorageDomainUsed GiB with $clientAmount clients" -ForegroundColor Yellow
 }
