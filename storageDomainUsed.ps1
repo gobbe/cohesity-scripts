@@ -66,7 +66,7 @@ foreach ($stat in $stats) {
 
         
         # Fetch VMware/Nutanix/HyperV jobs 
-        $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'ESX|HV|NTNX'
+        $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -cmatch 'ESX|HV|NTNX'
         foreach ($job in $jobs) {
             $runClients = @()
             $maxClients = 0
@@ -93,7 +93,7 @@ foreach ($stat in $stats) {
         }
 
         # Fetch physical jobs with tag
-        $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'WIN|NIX'
+        $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -cmatch 'WIN|NIX'
         foreach ($job in $jobs) {
             $runClients = @()
             $maxClients = 0
