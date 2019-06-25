@@ -65,7 +65,7 @@ foreach ($stat in $stats) {
 
     
     # Fetch VMware/Nutanix/HyperV jobs 
-    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'ESX|HV|NUTANIX'
+    $jobs = Get-CohesityProtectionJob -Names $customerName | Where-Object Name -match 'ESX|HV|NTNX'
     foreach ($job in $jobs) {
         $runClients = @()
         $maxClients = 0
@@ -124,7 +124,7 @@ foreach ($stat in $stats) {
     Add-Content -Path $export -Value $line
 
     # Export protected sources to file
-    $clientListExport = $customerName + "_runclients_" + $($lastDay.toString("MMMM_yyyy")) + ".txt"
+    $clientListExport = $customerStorageDomainName + "_runclients_" + $($lastDay.toString("MMMM_yyyy")) + ".txt"
     Add-Content -Path $clientListExport -Value "Virtual sources: $virtualNames"
     Add-Content -Path $clientListExport -Value "Physical sources: $physicalNames"
     
