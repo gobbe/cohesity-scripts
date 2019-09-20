@@ -1,0 +1,7 @@
+{
+        "cohesityCluster": cohesity-01",
+        "cohesityCred": "cohesity_cred.xml",
+        "vmwareServer": "vcenter-01",
+        "vmwareResourcePool": "Resources",
+        "vmwareCred": "vmware_cred.xml"
+}

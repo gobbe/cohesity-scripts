@@ -1,0 +1,20 @@
+{
+    "virtualMachines": [
+        {
+            "name": "windows",
+            "guestCred": "guestCred.xml",
+            "testIp": "10.10.1.10",
+            "testNetwork": "VMnetwork",
+            "testGateway": "10.10.1.1",
+            "tasks": ["Ping","Netlogon"]
+        },
+        {
+            "name": "sql",
+            "guestCred": "guestCred.xml",
+            "testIp": "10.10.2.10",
+            "testNetwork": "VMnetwork",
+            "testGateway": "10.10.2.1",
+            "tasks": ["Ping","Netlogon"]
+        }
+    ]
+}
