@@ -1,5 +1,5 @@
 {
-        "cohesityCluster": cohesity-01",
+        "cohesityCluster": "cohesity-01",
         "cohesityCred": "cohesity_cred.xml",
         "vmwareServer": "vcenter-01",
         "vmwareResourcePool": "Resources",
