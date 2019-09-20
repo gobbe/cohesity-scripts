@@ -2,6 +2,7 @@
     "virtualMachines": [
         {
             "name": "windows",
+            "backupJobName": "Virtual",
             "guestCred": "guestCred.xml",
             "testIp": "10.10.1.10",
             "testNetwork": "VMnetwork",
@@ -10,6 +11,7 @@
         },
         {
             "name": "sql",
+            "backupJobName": "Virtual",
             "guestCred": "guestCred.xml",
             "testIp": "10.10.2.10",
             "testNetwork": "VMnetwork",
