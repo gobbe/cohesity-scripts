@@ -63,7 +63,7 @@ This file contains information about virtual machines being tested and tests run
 
 ### identity xml files
 
-Identity XML files are not included here. They can be created with [createCredentials.ps1](https://github.com/gobbe/cohesity-scripts/cohesity-backup-validation/blob/master/addCustomHosts.ps1) file.
+Identity XML files are not included here. They can be created with [createCredentials.ps1](https://github.com/gobbe/cohesity-scripts/blob/master/cohesity-backup-validation/createCredentials.ps1) file.
 
 _Note: Secure XML files can only be decrypted by the user account that created them._
 
