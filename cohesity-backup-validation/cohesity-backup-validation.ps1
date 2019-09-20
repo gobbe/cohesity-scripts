@@ -6,7 +6,7 @@ $testrun = @{
     File            = 'testbuilder.ps1'
     EnvironmentFile = 'environment.json'
     ConfigFile      = 'config.json'
-    IdentityPath    = '.\credential\laptop'
+    IdentityPath    = '.\credentials'
     }
 
 Invoke-Build @testrun -Result Result
