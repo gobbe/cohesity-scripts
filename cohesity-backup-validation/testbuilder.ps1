@@ -83,10 +83,10 @@ task checkCloneTask {
             Write-Host "$($Clone.Name) clone status is $validateTask and Power Status is $ValidatePowerOn" -ForegroundColor Yellow
             if ($validateTask -eq 'kFinished' -and $validatePowerOn -eq 'PoweredOn') {
                 break
-            } elseif ($sleepCount -gt '30') {
+            } elseif ($sleepCount -gt '20') {
                 throw "Clone of VM $($Clone.Name) failed. Failing tests. Other cloned VMs remain cloned status, manual cleanup might needed!"
             } else {
-                Start-Sleep 5
+                Start-Sleep 15
                 $sleepCount++
             }
         }
@@ -101,7 +101,7 @@ task checkVmwareTools {
             
             Write-Host "VM $($Clone.Name) VMware Tools Status is $toolStatus" -ForegroundColor Yellow
             if ($toolStatus -ne 'guestToolsRunning') {
-                Start-Sleep 5
+                Start-Sleep 15
             } else {
                 break
             }
@@ -168,14 +168,14 @@ task configVMNetworkIP {
                                New-NetIPAddress -IPAddress ' + $Config.virtualMachines[$i].testIp + ' -PrefixLength ' + $Config.virtualMachines[$i].testSubnet + `
                                ' -DefaultGateway ' + $Config.virtualMachines[$i].testGateway
             ScriptType      = 'PowerShell'
-            VM              = $Clone.mountName
+            VM              = $Clone.Name
             GuestCredential = $vmCredentials
         }
         $output = Invoke-VMScript @splat -ErrorAction Stop
         $splat = @{
             ScriptText      = '(Get-NetAdapter| where {($_.MacAddress).ToLower() -eq "' + $TestInterfaceMAC + '"} | Get-NetIPAddress -AddressFamily IPv4).IPAddress'
             ScriptType      = 'PowerShell'
-            VM              = $Clone.mountName
+            VM              = $Clone.Name
             GuestCredential = $vmCredentials
         }
         $output = Invoke-VMScript @splat -ErrorAction Stop
