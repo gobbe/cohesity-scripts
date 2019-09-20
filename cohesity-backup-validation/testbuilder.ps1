@@ -160,7 +160,7 @@ task configVMNetworkIP {
         Write-Host "$($Clone.Name): Importing credential file $($IdentityPath + $($Config.virtualMachines[$i].guestCred))" -ForegroundColor Yellow
         $vmCredentials = Import-Clixml -Path ($IdentityPath + $($Config.virtualMachines[$i].guestCred))
         
-        $TestInterfaceMAC = ((Get-NetworkAdapter -VM $Config.virtualMachines[$i].mountName | Select-Object -first 1).MacAddress).ToLower() -replace ":","-"
+        $TestInterfaceMAC = ((Get-NetworkAdapter -VM $Clone.Name | Select-Object -first 1).MacAddress).ToLower() -replace ":","-"
         $splat = @{
             ScriptText      = 'Get-NetAdapter | where {($_.MacAddress).ToLower() -eq "' + $TestInterfaceMAC + '"} | Remove-NetRoute -Confirm:$false -ErrorAction SilentlyContinue;`
                                Get-NetAdapter | where {($_.MacAddress).ToLower() -eq "' + $TestInterfaceMAC + '"} | Get-NetIPAddress | Remove-NetIPAddress -confirm:$false;`
