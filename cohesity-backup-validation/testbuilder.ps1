@@ -65,7 +65,7 @@ task createCloneTask {
     # Uses a null array of Mount IDs that will be used to track the request process
     [Array]$Script:CloneArray = $null
     foreach ($VM in $Config.virtualMachines) {  
-        $backupJob =  Find-CohesityObjectsForRestore -Search $($VM.name) -environments kVMware | Where-Object JobName -eq $($VM.backupJobName) 
+        $backupJob =  Find-CohesityObjectsForRestore -Search $($VM.name) -environments kVMware | Where-Object JobName -eq $($VM.backupJobName) 
         $cloneVM = Get-CohesityVMwareVM -name $VM.name 
         $cloneTask = Copy-CohesityVMwareVM -TaskName "BTest_$($VM.name)" -PoweredOn:$true -DisableNetwork:$true -Jobid $($backupJob.JobId) -SourceId $($cloneVM.id) -TargetViewName "BTest_$($VM.name)" -VmNamePrefix "BTest_" -ResourcePoolId $($vmwareResourcePool.id) -NewParent $($vmwareSource.Id)
         Write-Host "Created cloneTask $($cloneTask.Id) for VM $($VM.name)" -ForegroundColor Yellow
