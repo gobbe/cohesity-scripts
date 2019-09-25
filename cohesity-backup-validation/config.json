@@ -1,8 +1,9 @@
 {
     "virtualMachines": [
         {
-            "name": "windows",
-            "backupJobName": "Virtual",
+            "name": "WindowsBT",
+            "guestOS": "Windows",
+            "backupJobName": "Thorpe Demo",
             "guestCred": "guestCred.xml",
             "testIp": "10.10.1.10",
             "testNetwork": "VMnetwork",
@@ -10,13 +11,13 @@
             "tasks": ["Ping","Netlogon"]
         },
         {
-            "name": "sql",
-            "backupJobName": "Virtual",
+            "name": "centos-mysql",
+            "guestOS": "Linux",
             "guestCred": "guestCred.xml",
             "testIp": "10.10.2.10",
             "testNetwork": "VMnetwork",
             "testGateway": "10.10.2.1",
-            "tasks": ["Ping","Netlogon"]
+            "tasks": ["Ping","MySQLStatus"]
         }
     ]
 }
