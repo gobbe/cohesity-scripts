@@ -1,17 +1,35 @@
 ###
 ### Helper tool to specify all possible application tests - Jussi Jaurola <jussi@cohesity.com>
 ###
-### This sample contains only two tests but more tests can be added and tests can be assigned per vm on configuration files
+### This sample contains only three tests but more tests can be added and tests can be assigned per vm on configuration files
 ###
 
 param(
     $Config,
-    [System.Management.Automation.PSCredential]$GuestCredential
+    [System.Management.Automation.PSCredential]$vmCredentials
 )
 
 task Ping {
     assert (Test-Connection -ComputerName $Config.testIp -Quiet) "Unable to ping the server."
     
+}
+
+task MySQLStatus {
+    ### Get credentials
+    $vmCredentials = Import-Clixml -Path ($Config.guestCred))
+
+    $vm = "BTest_" + $Config.name
+
+    $command = "service mysqld status"
+
+    $run = @{
+        VM = $vm 
+        GuestCredential = $vmCredentials
+        ScriptType  = 'bash'
+        ScriptText = $command
+    }
+    $results = Invoke-VMScript @run
+    Write-Host "$VM MySQL Status: $results"
 }
 
 task Netlogon {
