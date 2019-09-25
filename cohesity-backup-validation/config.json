@@ -13,6 +13,7 @@
         {
             "name": "centos-mysql",
             "guestOS": "Linux",
+            "backupJobName": "BizApp Demo",
             "guestCred": "guestCred.xml",
             "testIp": "10.10.2.10",
             "testNetwork": "VMnetwork",
