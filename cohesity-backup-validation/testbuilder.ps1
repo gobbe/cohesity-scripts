@@ -60,11 +60,12 @@ task createCloneTask {
         ### if multiple objects found with same object name, use first
         $backupJob =  Find-CohesityObjectsForRestore -Search $($VM.name) -environments kVMware | Where-Object JobName -eq $($VM.backupJobName) | Select-Object -first 1 
         $cloneVM = Get-CohesityVMwareVM -name $VM.name 
+        $taskName = $($VM.vmNamePrefix) + "" + $($VM.name)  
         if (!$cloneVM) {
             Write-Host "Couldnt find VM $($VM.name). Failing tests. Please check!" -ForegroundColor Red
             exit
         }
-        $cloneTask = Copy-CohesityVMwareVM -TaskName "BTest_$($VM.name)" -PoweredOn:$true -DisableNetwork:$false -Jobid $($backupJob.JobId) -SourceId $($cloneVM.id) -TargetViewName "BTest_$($VM.name)" -VmNamePrefix "BTest_" -ResourcePoolId $($vmwareResourcePool.id) -NewParent $($vmwareSource.Id)
+        $cloneTask = Copy-CohesityVMwareVM -TaskName $taskName -PoweredOn:$true -DisableNetwork:$false -Jobid $($backupJob.JobId) -SourceId $($cloneVM.id) -TargetViewName $taskName -VmNamePrefix "$($VM.vmNamePrefix)" -ResourcePoolId $($vmwareResourcePool.id) -NewParent $($vmwareSource.Id)
         Write-Host "Created cloneTask $($cloneTask.Id) for VM $($VM.name)" -ForegroundColor Yellow
         $Script:CloneArray += $cloneTask
     }
