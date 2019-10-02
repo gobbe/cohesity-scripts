@@ -48,16 +48,19 @@ This file contains information about virtual machines being tested and tests run
             "guestCred": "./guestvm_cred.xml",
             "testIp": "10.99.1.222",
             "testNetwork": "VM Network",
+             "testSubnet": "255.255.255.0",
             "testGateway": "10.99.1.1",
             "tasks": ["Ping","Netlogon"]
         },
         {
             "name": "mysql",
             "guestOS": "Linux",
+            "linuxNetDev": "eth0",
             "backupJobName": "VM_Job",
             "guestCred": "./guestvm_cred_linux.xml",
             "testIp": "10.99.1.223",
             "testNetwork": "VM Network",
+             "testSubnet": "255.255.255.0",
             "testGateway": "10.99.1.1",
             "tasks": ["Ping","MySQLStatus"]
         }
