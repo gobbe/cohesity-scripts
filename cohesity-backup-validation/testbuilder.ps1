@@ -204,7 +204,7 @@ task validationTests {
     foreach ($Clone in $CloneArray) {
         Write-Host "$($Clone.Name): Running tests $($Config.virtualMachines[$i].tasks)" -ForegroundColor Yellow
         $vmCredentials = Import-Clixml -Path ($Config.virtualMachines[$i].guestCred)
-        Invoke-Build -File .\validationTests.ps1 -Task $Config.virtualMachines[$i].tasks -Config $Config.virtualMachines[$i] -GuestCredential $vmCredentials
+        Invoke-Build -File .\validationTests.ps1 -Task $Config.virtualMachines[$i].tasks -Config $Config.virtualMachines[$i] -vmCredentials $vmCredentials
         Write-Host "$($Clone.Name): Testing complete" -ForegroundColor Yellow
         $i++
     }
