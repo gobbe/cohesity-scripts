@@ -41,21 +41,25 @@ This file contains information about virtual machines being tested and tests run
 ```PowerShell
 {
     "virtualMachines": [
-        {
-            "name": "windows",
-            "guestCred": "guestvm_cred.xml",
-            "testIp": "10.10.1.10",
+{
+            "name": "Win2012",
+            "guestOS": "Windows",
+            "backupJobName": "VM_Job",
+            "guestCred": "./guestvm_cred.xml",
+            "testIp": "10.99.1.222",
             "testNetwork": "VMnetwork",
-            "testGateway": "10.10.1.1",
+            "testGateway": "10.99.1.1",
             "tasks": ["Ping","Netlogon"]
         },
         {
-            "name": "sql",
-            "guestCred": "guestvm_cred.xml",
-            "testIp": "10.10.2.10",
+            "name": "mysql",
+            "guestOS": "Linux",
+            "backupJobName": "VM_Job",
+            "guestCred": "./guestvm_cred_linux.xml",
+            "testIp": "10.99.1.223",
             "testNetwork": "VMnetwork",
-            "testGateway": "10.10.2.1",
-            "tasks": ["Ping","Netlogon"]
+            "testGateway": "10.99.1.1",
+            "tasks": ["Ping","MySQLStatus"]
         }
     ]
 }
