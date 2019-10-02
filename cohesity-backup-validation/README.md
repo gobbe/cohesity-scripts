@@ -27,10 +27,10 @@ This file contains both Cohesity and VMware vCenter server information. Cohesity
 ```PowerShell
 {
         "cohesityCluster": cohesity-01",
-        "cohesityCred": "cohesity_cred.xml",
+        "cohesityCred": "./cohesity_cred.xml",
         "vmwareServer": "vcenter-01",
         "vmwareResourcePool": "Resources",
-        "vmwareCred": "vmware_cred.xml"
+        "vmwareCred": "./vmware_cred.xml"
 }
 ```
 
