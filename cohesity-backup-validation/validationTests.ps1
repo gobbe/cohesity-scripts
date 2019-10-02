@@ -6,36 +6,56 @@
 
 param(
     $Config,
-    [System.Management.Automation.PSCredential]$vmCredentials
+    [System.Management.Automation.PSCredential]$vmCredentials,
+    $vmName
 )
 
 task Ping {
-    assert (Test-Connection -ComputerName $Config.testIp -Quiet) "Unable to ping the server."
+    $results = (Test-Connection -ComputerName $Config.testIp -Quiet)
+
+    if ($results -eq $true) { 
+        Write-Host "Task ping for host $($Config.name) passed!" -ForegroundColor Yellow
+    }
+
+    if ($results -eq $false) {
+        Write-Host "Task ping for host $($Config.name) failed!" -ForegroundColor Red
+    }
     
 }
 
 task MySQLStatus {
-    ### Get credentials
-    $vmCredentials = Import-Clixml -Path ($Config.guestCred))
-
-    $vm = "BTest_" + $Config.name
-
-    $command = "service mysqld status"
-
     $run = @{
-        VM = $vm 
+        VM              = $vmName
         GuestCredential = $vmCredentials
-        ScriptType  = 'bash'
-        ScriptText = $command
+        ScriptType        = 'bash'
+        ScriptText      = "service mysqld status"
     }
     $results = Invoke-VMScript @run
-    Write-Host "$VM MySQL Status: $results"
+    Write-Host "$vmName MySQL Status: $results"
 }
 
-task Netlogon {
-    $GuestCredentialModified = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ('.\'+$GuestCredential.UserName), ($GuestCredential.Password)
-    $ValidateService = (Get-WmiObject -Class Win32_Service -ComputerName $Config.testIp -Credential $GuestCredentialModified -Filter "name='Netlogon'").State
-    equals $ValidateService 'Running'
+task getWindowsServicesStatus {
+    $run = @{
+        ScriptText      = 'Get-Service'
+        ScriptType      = 'PowerShell'
+        VM              = $vmName
+        GuestCredential = $vmCredentials
+    }
+    $results = Invoke-VMScript @run -ErrorAction Stop
+
+    Write-Host "$vmName service status: $results"
+}
+
+task getLinuxServiceStatus {
+    $run = @{
+        ScriptText      = 'service --status-all'
+        ScriptType      = 'bash'
+        VM              = $vmName
+        GuestCredential = $vmCredentials
+    }
+    $results = Invoke-VMScript @run -ErrorAction Stop
+
+    Write-Host "$vmName service status: $results"
 }
 
 task .
