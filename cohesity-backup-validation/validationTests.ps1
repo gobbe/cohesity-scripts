@@ -115,7 +115,7 @@ task checkPSScriptExecution {
             $vmscript = @{
                 ScriptText      = 'hostname'
                 ScriptType      = 'PowerShell'
-                VM              = $Clonename
+                VM              = $Clone.name
                 GuestCredential = $vmCredentials
             }
             try {
